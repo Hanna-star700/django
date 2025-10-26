@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Рейтинг студентів{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏆 Рейтинг студентів</h1>
+    <p>Найкращі результати вступного тесту з Python</p>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Загальний рейтинг (топ 20)</h3>
+    
+    {% if attempts %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ім'я</th>
+                    <th>Результат</th>
+                    <th>Відсоток</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in attempts %}
+                <tr>
+                    <td>
+                        {% if forloop.counter == 1 %}
+                            🥇 {{ forloop.counter }}
+                        {% elif forloop.counter == 2 %}
+                            🥈 {{ forloop.counter }}
+                        {% elif forloop.counter == 3 %}
+                            🥉 {{ forloop.counter }}
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: 600; color: #333;">{{ a.name }}</td>
+                    <td>{{ a.score }}/{{ a.total }}</td>
+                    <td>
+                        <span style="background: {% if a.percentage >= 80 %}#27ae60{% elif a.percentage >= 60 %}#f39c12{% elif a.percentage >= 40 %}#3498db{% else %}#95a5a6{% endif %}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                            {{ a.percentage|floatformat:0 }}%
+                        </span>
+                    </td>
+                    <td style="color: #999;">{{ a.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+            <h3 style="color: #333; margin-bottom: 1rem;">Поки що немає результатів</h3>
+            <p style="color: #666; margin-bottom: 2rem;">Станьте першим хто пройде вступний тест!</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="{% url 'quiz' %}" class="btn">
+            🎯 Пройти тест і потрапити в рейтинг
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-secondary" style="margin-left: 1rem;">
+            На головну
+        </a>
+    </div>
+</div>
+
+<div class="features-section" style="margin-top: 2rem;">
+    <h2>Як потрапити в топ?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>Вивчайте матеріал</h3>
+            <p>Переглядайте уроки та повторюйте основні теми Python</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💪</div>
+            <h3>Практикуйтесь</h3>
+            <p>Виконуйте вправи та пишіть код самостійно</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Повторюйте тест</h3>
+            <p>Проходьте тест кілька разів для покращення результату</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

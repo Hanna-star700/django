@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Відео уроки{% endblock %}
+
+{% block content %}
+<div class="video-lessons-container">
+    <div class="video-header">
+        <div class="video-badge">
+            <span class="badge-icon">🎥</span>
+            <span>Відео уроки Python</span>
+        </div>
+        <h1>Ваш шлях до вивчення Python</h1>
+        <p class="video-description">Почніть з перших двох відео, а далі повертайтесь до вступного тесту для перевірки прогресу</p>
+    </div>
+
+    <div class="learning-path">
+        <h3>Рекомендований порядок навчання</h3>
+        <div class="path-steps">
+            <div class="path-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Дивіться відео уроки</h4>
+                    <p>Почніть з основ Python та поступово переходьте до складніших тем</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Практикуйтеся</h4>
+                    <p>Повторюйте код з відео та експериментуйте з новими концепціями</p>
+                </div>
+            </div>
+            <div class="path-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Перевірте прогрес</h4>
+                    <p>Пройдіть вступний тест знову, щоб побачити свій прогрес</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="video-grid" id="videoGrid">
+        {% for v in lessons %}
+        <div class="video-card" data-youtube="{{ v.youtube_url }}">
+            <div class="video-thumbnail">
+                <div class="play-button">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 5v14l11-7z" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="video-overlay">
+                    <span class="duration">{{ v.duration }}</span>
+                </div>
+            </div>
+            <div class="video-info">
+                <div class="video-title">{{ v.title }}</div>
+                <div class="video-description">{{ v.description }}</div>
+                <div class="video-meta">
+                    <span class="lesson-number">Урок {{ v.order }}</span>
+                    <span class="video-type">YouTube</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-videos">
+            <div class="empty-icon">🎥</div>
+            <h3>Немає відео уроків</h3>
+            <p>{% if user.is_staff %}Додайте відео уроки через адмін панель для початку навчання.{% else %}Відео уроки незабаром з'являться. Поки що можете пройти тест!{% endif %}</p>
+            {% if user.is_staff %}
+            <a href="/admin/" class="btn">Перейти до адмінки</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="video-actions">
+        <a href="{% url 'quiz' %}" class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Пройти вступний тест
+        </a>
+        <a href="/" class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            На головну
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    const cards = document.querySelectorAll('.video-card');
+    cards.forEach(card => {
+        const url = card.getAttribute('data-youtube');
+        if (!url) return;
+        
+        let embed = url;
+        try {
+            // Handle common YouTube formats
+            if (embed.includes('watch?v=')) {
+                const id = embed.split('watch?v=')[1].split('&')[0];
+                embed = 'https://www.youtube.com/embed/' + id;
+            } else if (embed.includes('youtu.be/')) {
+                const id = embed.split('youtu.be/')[1].split('?')[0];
+                embed = 'https://www.youtube.com/embed/' + id;
+            }
+        } catch (e) {
+            console.error('Error parsing YouTube URL:', e);
+            return;
+        }
+
+        // Create modal for video playback
+        card.addEventListener('click', () => {
+            const modal = document.createElement('div');
+            modal.className = 'video-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay">
+                    <div class="modal-content">
+                        <button class="modal-close">&times;</button>
+                        <iframe 
+                            width="100%" 
+                            height="400" 
+                            src="${embed}" 
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal functionality
+            const closeBtn = modal.querySelector('.modal-close');
+            const overlay = modal.querySelector('.modal-overlay');
+            
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    document.body.removeChild(modal);
+                }
+            });
+            
+            // Close on Escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        });
+    });
+})();
+</script>
+{% endblock %}
+

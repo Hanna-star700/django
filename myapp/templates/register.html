@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Реєстрація{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-header">
+        <div class="register-badge">
+            <span class="badge-icon">👤</span>
+            <span>Створення акаунта</span>
+        </div>
+        <h1>Приєднуйтесь до навчання!</h1>
+        <p class="register-description">Створіть безкоштовний акаунт для доступу до всіх відео уроків та можливості відстежувати свій прогрес</p>
+    </div>
+
+    <div class="register-form">
+        <form method="post" class="form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username" class="form-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Ім'я користувача
+                </label>
+                {{ form.username }}
+                <div class="form-help">Оберіть унікальне ім'я користувача</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password1" class="form-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 15l-3-3 3-3M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Пароль
+                </label>
+                {{ form.password1 }}
+                <div class="form-help">Мінімум 8 символів</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password2" class="form-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Підтвердження паролю
+                </label>
+                {{ form.password2 }}
+                <div class="form-help">Введіть пароль ще раз для підтвердження</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Створити акаунт
+            </button>
+        </form>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <div class="error-icon">⚠️</div>
+            <div class="error-content">
+                <h4>Помилки в формі:</h4>
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="register-benefits">
+        <h3>Що ви отримаєте після реєстрації?</h3>
+        <div class="benefits-list">
+            <div class="benefit-item">
+                <span class="benefit-icon">🎥</span>
+                <span>Доступ до всіх відео уроків</span>
+            </div>
+            <div class="benefit-item">
+                <span class="benefit-icon">📊</span>
+                <span>Відстеження прогресу</span>
+            </div>
+            <div class="benefit-item">
+                <span class="benefit-icon">🔄</span>
+                <span>Повторне проходження тестів</span>
+            </div>
+            <div class="benefit-item">
+                <span class="benefit-icon">💾</span>
+                <span>Збереження результатів</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="register-footer">
+        <p>Вже маєте акаунт? <a href="{% url 'quiz' %}">Продовжити без реєстрації</a></p>
+    </div>
+</div>
+

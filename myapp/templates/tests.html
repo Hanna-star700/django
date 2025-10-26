@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Тести Python{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎯 Тести з Python</h1>
+    <p>Перевірте свої знання Python та отримайте оцінку</p>
+</div>
+
+{% if result %}
+<div class="card" style="background: {% if result.level == 'success' %}#d4edda{% elif result.level == 'info' %}#d1ecf1{% elif result.level == 'warning' %}#fff3cd{% else %}#f8d7da{% endif %}; border-left: 4px solid {% if result.level == 'success' %}#28a745{% elif result.level == 'info' %}#17a2b8{% elif result.level == 'warning' %}#ffc107{% else %}#dc3545{% endif %};">
+    <h2>Результат тесту</h2>
+    <p style="font-size: 1.3em; margin: 15px 0;">
+        <strong>{{ result.message }}</strong>
+    </p>
+    <p style="font-size: 1.2em;">
+        Ваш результат: <strong>{{ result.score }}/{{ result.total }}</strong> ({{ result.percentage }}%)
+    </p>
+    <button onclick="location.reload()" class="btn" style="background: #3498db; margin-top: 10px;">Пройти тест заново</button>
+</div>
+{% else %}
+
+<div class="card">
+    <h2>Тест 1: Основи Python</h2>
+    <p><strong>10 питань • 15 хвилин • Початковий рівень</strong></p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="test_id" value="1">
+        
+        <div class="question">
+            <h3>1. Що виведе цей код?</h3>
+            <div class="code-block">
+print(2 + 3 * 2)
+            </div>
+            <label><input type="radio" name="q1" value="a" required> а) 10</label><br>
+            <label><input type="radio" name="q1" value="b"> б) 8</label><br>
+            <label><input type="radio" name="q1" value="c"> в) 7</label><br>
+        </div>
+
+        <div class="question">
+            <h3>2. Який результат виконання?</h3>
+            <div class="code-block">
+x = "Hello"
+print(x[1:4])
+            </div>
+            <label><input type="radio" name="q2" value="a" required> а) ell</label><br>
+            <label><input type="radio" name="q2" value="b"> б) Hel</label><br>
+            <label><input type="radio" name="q2" value="c"> в) ello</label><br>
+        </div>
+
+        <div class="question">
+            <h3>3. Що робить ця функція?</h3>
+            <div class="code-block">
+def mystery(lst):
+    return len(lst) > 0 and lst[0] == 5
+            </div>
+            <label><input type="radio" name="q3" value="a" required> а) Перевіряє чи перший елемент 5</label><br>
+            <label><input type="radio" name="q3" value="b"> б) Рахує кількість 5 в списку</label><br>
+            <label><input type="radio" name="q3" value="c"> в) Сортує список</label><br>
+        </div>
+
+        <div class="question">
+            <h3>4. Який тип даних поверне вираз: type(3.14)</h3>
+            <label><input type="radio" name="q4" value="a" required> а) int</label><br>
+            <label><input type="radio" name="q4" value="b"> б) float</label><br>
+            <label><input type="radio" name="q4" value="c"> в) str</label><br>
+        </div>
+
+        <div class="question">
+            <h3>5. Що виведе цей код?</h3>
+            <div class="code-block">
+numbers = [1, 2, 3]
+numbers.append(4)
+print(len(numbers))
+            </div>
+            <label><input type="radio" name="q5" value="a" required> а) 3</label><br>
+            <label><input type="radio" name="q5" value="b"> б) 4</label><br>
+            <label><input type="radio" name="q5" value="c"> в) [1,2,3,4]</label><br>
+        </div>
+
+        <button type="submit" class="btn" style="background: #27ae60;">Завершити тест</button>
+    </form>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Інші тести</h3>
+    
+    <div class="lesson-card">
+        <h4>Тест 2: Умови та цикли</h4>
+        <p>12 питань • 20 хвилин • Середній рівень</p>
+        <p><em>Доступно після завершення Тесту 1</em></p>
+    </div>
+    
+    <div class="lesson-card">
+        <h4>Тест 3: Функції та модулі</h4>
+        <p>15 питань • 25 хвилин • Просунутий рівень</p>
+        <p><em>Доступно після завершення Тесту 2</em></p>
+    </div>
+</div>
+{% endblock %}

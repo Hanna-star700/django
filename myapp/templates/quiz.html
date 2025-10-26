@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Вступний тест{% endblock %}
+
+{% block content %}
+<div class="quiz-container" id="quizApp">
+    <div class="quiz-header">
+        <div class="quiz-badge">
+            <span class="badge-icon">📝</span>
+            <span>Вступний тест з Python</span>
+        </div>
+        <h1>Перевірте свої знання Python</h1>
+        <p class="quiz-description">Відповісти на {{ total_questions }} питань, щоб отримати персональні рекомендації щодо навчання</p>
+        <div class="form-group" style="max-width: 400px; margin: 0 auto 1rem;">
+            <label for="userNameInput" class="form-label">Ваше ім'я</label>
+            <input id="userNameInput" type="text" placeholder="Введіть ім'я" />
+        </div>
+        <div class="quiz-progress">
+            <div class="quiz-progress-bar" id="progressBar" style="width: 0%"></div>
+            <div class="progress-text">
+                <span id="currentQuestion">1</span> з {{ total_questions }}
+            </div>
+        </div>
+    </div>
+
+    {% for q in questions %}
+    <div class="question-card" data-qid="{{ q.id }}" style="display: none;">
+        <div class="question-header">
+            <div class="question-number">{{ forloop.counter }}</div>
+            <div class="question-text">{{ q.question_text }}</div>
+        </div>
+        <div class="options">
+            <div class="option" data-value="A">
+                <div class="option-letter">A</div>
+                <div class="option-text">{{ q.option_a }}</div>
+            </div>
+            <div class="option" data-value="B">
+                <div class="option-letter">B</div>
+                <div class="option-text">{{ q.option_b }}</div>
+            </div>
+            <div class="option" data-value="C">
+                <div class="option-letter">C</div>
+                <div class="option-text">{{ q.option_c }}</div>
+            </div>
+            <div class="option" data-value="D">
+                <div class="option-letter">D</div>
+                <div class="option-text">{{ q.option_d }}</div>
+            </div>
+        </div>
+        <div class="quiz-navigation">
+            <button class="btn prev" id="prevBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Назад
+            </button>
+            <button class="btn next" id="nextBtn">
+                Далі
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    {% empty %}
+    <div class="question-card">
+        <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <h3>Немає питань</h3>
+            <p>{% if user.is_staff %}Додайте питання через адмін панель для проведення тесту.{% else %}Тест тимчасово недоступний. Спробуйте пізніше!{% endif %}</p>
+            {% if user.is_staff %}
+            <a href="/admin/" class="btn">Перейти до адмінки</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if questions %}
+    <div class="quiz-navigation" id="submitRow" style="display:none;">
+        <button class="btn submit-btn" id="submitBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Завершити тест
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+(function() {
+    const cards = Array.from(document.querySelectorAll('.question-card'));
+    if (!cards.length) return;
+    const total = cards.length;
+    const answers = {};
+    let idx = 0;
+
+    const progressBar = document.getElementById('progressBar');
+    const submitRow = document.getElementById('submitRow');
+    const currentQuestionSpan = document.getElementById('currentQuestion');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateProgress() {
+        const percent = Math.round(((Object.keys(answers).length) / total) * 100);
+        progressBar.style.width = percent + '%';
+        progressBar.parentElement.setAttribute('aria-valuenow', percent);
+        currentQuestionSpan.textContent = idx + 1;
+    }
+
+    function show(i) {
+        cards.forEach((c, j) => c.style.display = (i === j) ? '' : 'none');
+        submitRow.style.display = (i === total - 1) ? '' : 'none';
+        
+        // Update navigation buttons
+        prevBtn.style.display = (i === 0) ? 'none' : 'flex';
+        nextBtn.style.display = (i === total - 1) ? 'none' : 'flex';
+        
+        updateProgress();
+    }
+
+    cards.forEach(card => {
+        const qid = card.getAttribute('data-qid');
+        const options = card.querySelectorAll('.option');
+        
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                options.forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                answers[qid] = opt.getAttribute('data-value');
+                updateProgress();
+                
+                // Auto-advance after selection
+                setTimeout(() => {
+                    if (idx < total - 1) {
+                        idx++;
+                        show(idx);
+                    }
+                }, 500);
+            });
+        });
+    });
+
+    // Navigation event listeners
+    prevBtn?.addEventListener('click', () => { 
+        idx = Math.max(0, idx - 1); 
+        show(idx); 
+    });
+    
+    nextBtn?.addEventListener('click', () => { 
+        idx = Math.min(total - 1, idx + 1); 
+        show(idx); 
+    });
+
+    show(idx);
+
+    document.getElementById('submitBtn')?.addEventListener('click', async () => {
+        const answeredQuestions = Object.keys(answers).length;
+        if (answeredQuestions < total) {
+            if (!confirm(`Ви відповіли на ${answeredQuestions} з ${total} питань. Продовжити?`)) {
+                return;
+            }
+        }
+        
+        try {
+            const name = (document.getElementById('userNameInput')?.value || '').trim();
+            const resp = await fetch('{% url "submit_quiz" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify({ answers, name })
+            });
+            const data = await resp.json();
+            sessionStorage.setItem('quiz_result', JSON.stringify(data));
+            window.location.href = '{% url "quiz_results" %}';
+        } catch (e) {
+            alert('Сталася помилка при надсиланні результату.');
+        }
+    });
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+})();
+</script>
+{% endblock %}
+

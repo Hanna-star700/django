@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Уроки Python{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📚 Уроки Python</h1>
+    <p>Вивчайте Python крок за кроком - від основ до просунутих тем</p>
+</div>
+
+<div class="lesson-grid">
+    <div class="lesson-card">
+        <h3>Урок 1: Основи</h3>
+        <p>Змінні, типи даних, операції</p>
+        <div class="code-block">
+name = "Python"<br>
+age = 30<br>
+print(f"{name} існує {age} років")
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+    
+    <div class="lesson-card">
+        <h3>Урок 2: Умови</h3>
+        <p>if, elif, else statements</p>
+        <div class="code-block">
+temperature = 25<br>
+if temperature > 30:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print("Спекотно")<br>
+else:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print("Комфортно")
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+    
+    <div class="lesson-card">
+        <h3>Урок 3: Цикли</h3>
+        <p>for, while loops</p>
+        <div class="code-block">
+for i in range(5):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print(f"Крок {i}")<br>
+<br>
+# Результат: Крок 0, Крок 1...
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+    
+    <div class="lesson-card">
+        <h3>Урок 4: Функції</h3>
+        <p>Створення та використання функцій</p>
+        <div class="code-block">
+def greet(name):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return f"Привіт, {name}!"<br>
+<br>
+print(greet("Анна"))
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+    
+    <div class="lesson-card">
+        <h3>Урок 5: Списки</h3>
+        <p>Робота з колекціями даних</p>
+        <div class="code-block">
+numbers = [1, 2, 3, 4, 5]<br>
+squares = [x**2 for x in numbers]<br>
+print(squares)  # [1, 4, 9, 16, 25]
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+    
+    <div class="lesson-card">
+        <h3>Урок 6: Словники</h3>
+        <p>Key-value структури даних</p>
+        <div class="code-block">
+student = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"ім'я": "Іван",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"вік": 20,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"курс": 2<br>
+}<br>
+print(student["ім'я"])
+        </div>
+        <a href="#" class="btn">Почати урок</a>
+    </div>
+</div>
+{% endblock %}

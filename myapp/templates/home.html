@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Головна - Learn Python{% endblock %}
+
+{% block content %}
+<div class="quiz-container" style="margin-top: 2rem;">
+    <div class="quiz-header">
+        <div class="quiz-badge">
+            <span class="badge-icon">🐍</span>
+            <span>Навчальна платформа Python</span>
+        </div>
+        <h1>Вивчайте Python з нуля!</h1>
+        <p class="quiz-description">
+            Почніть свій шлях у програмуванні з вступного тесту. Дізнайтеся свій рівень знань 
+            і отримайте персональні рекомендації для навчання.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin: 2rem auto; max-width: 1000px;">
+        <div class="feature-card" style="text-align: center;">
+            <div class="feature-icon">📝</div>
+            <h3>Вступний тест</h3>
+            <p>Пройдіть тест з Python, щоб визначити свій рівень та отримати рекомендації</p>
+        </div>
+        <div class="feature-card" style="text-align: center;">
+            <div class="feature-icon">📊</div>
+            <h3>Результати</h3>
+            <p>Дізнайтесь свій бал, теми для вивчення та порівняйте себе з іншими</p>
+        </div>
+        <div class="feature-card" style="text-align: center;">
+            <div class="feature-icon">🏆</div>
+            <h3>Рейтинг</h3>
+            <p>Змагайтесь з іншими студентами та покращуйте свої результати</p>
+        </div>
+    </div>
+
+    <div class="code-preview" style="margin: 2rem 0;">
+        <div class="code-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <span class="code-title">hello.py</span>
+        </div>
+        <div class="code-content">
+            <span class="code-line"><span class="code-keyword">def</span> <span class="code-function">greet</span>(name):</span>
+            <span class="code-line">    <span class="code-keyword">return</span> <span class="code-string">f"Привіт, {name}!"</span></span>
+            <span class="code-line"></span>
+            <span class="code-line"><span class="code-comment"># Приклад використання</span></span>
+            <span class="code-line">message = <span class="code-function">greet</span>(<span class="code-string">"Студент"</span>)</span>
+            <span class="code-line"><span class="code-function">print</span>(message)</span>
+        </div>
+    </div>
+
+    <div class="hero-buttons" style="display: flex; justify-content: center; gap: 1rem; margin: 2rem 0;">
+        <a href="{% url 'quiz' %}" class="cta-button primary">
+            <span>🎯 Пройти вступний тест</span>
+        </a>
+        <a href="{% url 'rating' %}" class="cta-button secondary" style="background: white; color: #667eea; border: 2px solid #667eea;">
+            <span>🏆 Подивитись рейтинг</span>
+        </a>
+    </div>
+</div>
+
+<div class="learning-path" style="margin-top: 2rem;">
+    <h2>Як це працює?</h2>
+    <div class="path-steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Введіть ім'я</h3>
+                <p>Вкажіть своє ім'я щоб воно відобразилось у рейтингу</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Пройдіть тест</h3>
+                <p>Відповідайте на питання про Python - змінні, функції, цикли і більше</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Отримайте результат</h3>
+                <p>Дізнайтесь свій бал, оцінку та теми які треба підвчити</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Перевіряйте рейтинг</h3>
+                <p>Подивіться як ви виступили у порівнянні з іншими студентами</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

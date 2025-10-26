@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Результати тесту{% endblock %}
+
+{% block content %}
+<div class="results-container" id="resultsApp">
+    <div class="results-header">
+        <div class="results-badge">
+            <span class="badge-icon">📊</span>
+            <span>Результати тесту</span>
+        </div>
+        <h1 id="resultTitle">Ваш результат</h1>
+        <p class="results-description">Отримайте персональні рекомендації для подальшого навчання</p>
+    </div>
+
+    <div class="score-section">
+        <div class="score-circle" id="scoreCircle" style="--percentage: 0deg;">
+            <div class="score-text" id="scoreText">0%</div>
+        </div>
+        <div class="score-details">
+            <h2 id="scoreDetails">0 з 0 правильних відповідей</h2>
+            <div class="score-level" id="scoreLevel">
+                <span class="level-icon">🎯</span>
+                <span class="level-text">Початківець</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendations-section">
+        <h3>Персональні рекомендації</h3>
+        <div class="recommendations" id="reco">
+            <div class="recommendation-item">
+                <span class="rec-icon">📚</span>
+                <span class="rec-text">Завантаження рекомендацій...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendations-section" id="topicsSection" style="display:none;">
+        <h3>Теми, які варто підівчити</h3>
+        <div class="recommendations" id="topicsList"></div>
+    </div>
+
+    <div class="next-steps">
+        <h3>Наступні кроки</h3>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon">🎥</div>
+                <h4>Відео уроки</h4>
+                <p>Дивіться якісні відео з YouTube для поступового вивчення основ Python</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">📝</div>
+                <h4>Практика</h4>
+                <p>Виконуйте практичні завдання та закріплюйте отримані знання</p>
+            </div>
+            <div class="step-card">
+                <div class="step-icon">🔄</div>
+                <h4>Повторне тестування</h4>
+                <p>Пройдіть тест знову після навчання, щоб перевірити свій прогрес</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/" class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            На головну
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'video_lessons' %}" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Перейти до відео уроків
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Зареєструватися на курси
+            </a>
+        {% endif %}
+        <a href="{% url 'quiz' %}" class="btn btn-outline">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Пройти знову
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    const raw = sessionStorage.getItem('quiz_result');
+    if (!raw) {
+        // Redirect to quiz if no results
+        window.location.href = '{% url "quiz" %}';
+        return;
+    }
+    
+    try {
+        const data = JSON.parse(raw);
+        const { name = 'Гість', score = 0, total = 0, percentage = 0, recommendations = '', achievement = '', topics = [] } = data;
+        const deg = Math.round(percentage / 100 * 360);
+        
+        // Update score circle
+        document.getElementById('scoreCircle').style.setProperty('--percentage', deg + 'deg');
+        document.getElementById('scoreText').textContent = Math.round(percentage) + '%';
+        document.getElementById('scoreDetails').textContent = `${score} з ${total} правильних відповідей`;
+        document.getElementById('resultTitle').textContent = `${name}, ваш результат`;
+        
+        // Update level based on percentage
+        const levelElement = document.getElementById('scoreLevel');
+        const levelIcon = levelElement.querySelector('.level-icon');
+        const levelText = levelElement.querySelector('.level-text');
+        
+        if (percentage >= 80) {
+            levelIcon.textContent = '🏆';
+            levelText.textContent = achievement || 'Експерт';
+            levelElement.className = 'score-level expert';
+        } else if (percentage >= 60) {
+            levelIcon.textContent = '⭐';
+            levelText.textContent = achievement || 'Розумний';
+            levelElement.className = 'score-level advanced';
+        } else if (percentage >= 40) {
+            levelIcon.textContent = '📈';
+            levelText.textContent = achievement || 'Середній';
+            levelElement.className = 'score-level intermediate';
+        } else {
+            levelIcon.textContent = '🌱';
+            levelText.textContent = achievement || 'Початківець';
+            levelElement.className = 'score-level beginner';
+        }
+        
+        // Update recommendations
+        const recommendationsElement = document.getElementById('reco');
+        recommendationsElement.innerHTML = `
+            <div class="recommendation-item">
+                <span class="rec-icon">💡</span>
+                <span class="rec-text">${recommendations}</span>
+            </div>
+        `;
+
+        // Topics to review
+        if (Array.isArray(topics) && topics.length) {
+            document.getElementById('topicsSection').style.display = '';
+            document.getElementById('topicsList').innerHTML = topics.map(t => `
+                <div class="recommendation-item">
+                    <span class="rec-icon">📌</span>
+                    <span class="rec-text">${t}</span>
+                </div>
+            `).join('');
+        }
+        
+        // Add animation delay for better UX
+        setTimeout(() => {
+            document.getElementById('scoreCircle').style.animation = 'scoreAnimation 1s ease-out';
+        }, 500);
+        
+    } catch (e) {
+        console.error('Error parsing quiz results:', e);
+        window.location.href = '{% url "quiz" %}';
+    }
+})();
+</script>
+{% endblock %}
+

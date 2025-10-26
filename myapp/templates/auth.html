@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Вхід / Реєстрація{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👤 Вхід або реєстрація</h1>
+    <p>Увійдіть у свій акаунт або створіть новий для доступу до відео уроків</p>
+</div>
+
+<div class="card" style="max-width: 500px; margin: 0 auto;">
+  <!-- Табы -->
+  <div style="display: flex; border-bottom: 2px solid #e9ecef; margin-bottom: 2rem;">
+    <button class="auth-tab active" onclick="switchTab('login')" id="loginTab" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 3px solid #667eea; cursor: pointer; font-size: 1.1rem; font-weight: 600; color: #667eea; transition: all 0.3s;">
+      🔐 Вхід
+    </button>
+    <button class="auth-tab" onclick="switchTab('register')" id="registerTab" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1.1rem; font-weight: 600; color: #999; transition: all 0.3s;">
+      🆕 Реєстрація
+    </button>
+  </div>
+
+  <!-- Форма входу -->
+  <div id="loginForm" class="auth-form">
+    <form method="post" autocomplete="on">
+      {% csrf_token %}
+      <input type="hidden" name="form_type" value="login" />
+      <div class="form-group">
+        <label for="id_username" class="form-label">👤 Ім'я користувача</label>
+        {{ login_form.username }}
+      </div>
+      <div class="form-group">
+        <label for="id_password" class="form-label">🔒 Пароль</label>
+        {{ login_form.password }}
+      </div>
+      <button type="submit" class="btn btn-full" style="margin-top: 1.5rem;">Увійти</button>
+      {% if login_form.errors %}
+      <div class="form-errors" style="margin-top:1rem;">
+        <div class="error-icon">⚠️</div>
+        <div class="error-content">
+          <h4>Помилка входу:</h4>
+          <ul>
+            {% for field, errors in login_form.errors.items %}
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in login_form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Форма реєстрації -->
+  <div id="registerForm" class="auth-form" style="display: none;">
+    <form method="post" autocomplete="on">
+      {% csrf_token %}
+      <input type="hidden" name="form_type" value="register" />
+      <div class="form-group">
+        <label for="register_username" class="form-label">👤 Ім'я користувача</label>
+        {{ register_form.username }}
+        <div class="form-help">Оберіть унікальне ім'я користувача</div>
+      </div>
+      <div class="form-group">
+        <label for="register_password1" class="form-label">🔒 Пароль</label>
+        {{ register_form.password1 }}
+        <div class="form-help">Мінімум 8 символів</div>
+      </div>
+      <div class="form-group">
+        <label for="register_password2" class="form-label">🔒 Підтвердження паролю</label>
+        {{ register_form.password2 }}
+      </div>
+      <button type="submit" class="btn btn-full" style="margin-top: 1.5rem;">Створити акаунт</button>
+      {% if register_form.errors %}
+      <div class="form-errors" style="margin-top:1rem;">
+        <div class="error-icon">⚠️</div>
+        <div class="error-content">
+          <h4>Помилки в формі:</h4>
+          <ul>
+            {% for field, errors in register_form.errors.items %}
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in register_form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
+    <p style="color: #666; margin: 0;">
+      Або продовжити без реєстрації: <a href="{% url 'quiz' %}" style="color: #667eea; font-weight: 600;">Пройти вступний тест</a>
+    </p>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  const loginTab = document.getElementById('loginTab');
+  const registerTab = document.getElementById('registerTab');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  
+  if (tab === 'login') {
+    loginTab.style.borderBottom = '3px solid #667eea';
+    loginTab.style.color = '#667eea';
+    registerTab.style.borderBottom = '3px solid transparent';
+    registerTab.style.color = '#999';
+    loginForm.style.display = 'block';
+    registerForm.style.display = 'none';
+  } else {
+    registerTab.style.borderBottom = '3px solid #667eea';
+    registerTab.style.color = '#667eea';
+    loginTab.style.borderBottom = '3px solid transparent';
+    loginTab.style.color = '#999';
+    registerForm.style.display = 'block';
+    loginForm.style.display = 'none';
+  }
+}
+
+// Автоматично відкрити таб реєстрації якщо є помилки в формі реєстрації або якщо передано параметр
+{% if register_form.errors or show_register %}
+  switchTab('register');
+{% endif %}
+</script>
+{% endblock %}
